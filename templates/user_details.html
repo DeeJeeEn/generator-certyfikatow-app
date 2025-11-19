@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% block title %}Szczegóły użytkownika: {{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Użytkownik: {{ user.username }}</h1>
+    <a href="{{ url_for('manage_users') }}" class="btn btn-secondary">Powrót do listy</a>
+</div>
+
+<div class="row">
+    <!-- Kolumna z danymi i edycją -->
+    <div class="col-md-6">
+        <div class="section-container">
+            <h3>Dane klienta</h3>
+            <form method="post">
+                <div class="form-group">
+                    <label>Firma</label>
+                    <input type="text" name="company_name" class="form-control" value="{{ user.company_name or '' }}">
+                </div>
+                <div class="form-group">
+                    <label>NIP</label>
+                    <input type="text" name="nip" class="form-control" value="{{ user.nip or '' }}">
+                </div>
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" name="email" class="form-control" value="{{ user.email or '' }}">
+                </div>
+                <div class="form-group">
+                    <label>Telefon</label>
+                    <input type="text" name="phone" class="form-control" value="{{ user.phone or '' }}">
+                </div>
+                <div class="form-group">
+                    <label>Osoba kontaktowa</label>
+                    <input type="text" name="contact_person" class="form-control" value="{{ user.contact_person or '' }}">
+                </div>
+                <hr>
+                <div class="form-group">
+                    <label>Zmień hasło (zostaw puste, jeśli bez zmian)</label>
+                    <input type="password" name="new_password" class="form-control" placeholder="Nowe hasło">
+                </div>
+                <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Kolumna z szablonami i historią -->
+    <div class="col-md-6">
+
+        <!-- SEKCJA SZABLONÓW (Zaktualizowana dla nowej logiki app.py) -->
+        <div class="section-container mb-4">
+            <h3>Przypisane szablony</h3>
+            {% if assigned_templates %}
+                <ul class="list-group">
+                {% for template in assigned_templates %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        {{ template.name }}
+                        <a href="{{ url_for('edit_template', template_id=template.id) }}" class="btn btn-sm btn-outline-info">Edytuj</a>
+                    </li>
+                {% endfor %}
+                </ul>
+            {% else %}
+                <p class="text-muted">Ten użytkownik nie ma przypisanych żadnych szablonów.</p>
+                <div class="alert alert-info text-small">
+                    Aby przypisać szablon, przejdź do <strong>Panelu Administratora</strong>, wybierz <strong>Edytuj</strong> przy konkretnym szablonie i zaznacz tego użytkownika na liście.
+                </div>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-sm btn-success">Przejdź do zarządzania szablonami</a>
+            {% endif %}
+        </div>
+
+        <!-- SEKCJA HISTORII -->
+        <div class="section-container">
+            <h3>Historia generowania</h3>
+            {% if logs %}
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Szablon</th>
+                            <th>Ilość</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td>{{ log.generation_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>
+                                {% if log.template %}
+                                    {{ log.template.name }}
+                                {% else %}
+                                    <em class="text-muted">Usunięty szablon</em>
+                                {% endif %}
+                            </td>
+                            <td>{{ log.certificate_count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p class="text-muted">Brak historii generowania dla tego użytkownika.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="section-container mt-4 bg-light">
+    <h3 class="text-danger">Strefa niebezpieczna</h3>
+    <form action="{{ url_for('delete_user', user_id=user.id) }}" method="post" onsubmit="return confirm('Czy na pewno chcesz trwale usunąć użytkownika {{ user.username }}? Tej operacji nie można cofnąć!');">
+        <button type="submit" class="btn btn-danger">Usuń użytkownika</button>
+    </form>
+</div>
+{% endblock %}

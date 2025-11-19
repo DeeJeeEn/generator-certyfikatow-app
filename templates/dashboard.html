@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}Panel Główny{% endblock %}
+{% block content %}
+    <div class="section-container">
+        <h2>Wygeneruj certyfikaty</h2>
+        {% if templates %}
+            <form id="cert-form" class="form-section">
+                <p class="info-message">Plik Excel z listą uczestników powinien mieć kolumny w kolejności: Imię i Nazwisko, Data urodzenia, Miejsce urodzenia, PESEL.</p>
+
+                <div class="form-group">
+                    <label for="participant_list">Plik z listą uczestników (.xlsx):</label>
+                    <input type="file" id="participant_list" name="participant_list" class="form-control-file" accept=".xlsx" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="template_id">Wybierz szablon:</label>
+                    <select id="template_id" name="template_id" class="form-control" required>
+                        <option value="">-- Wybierz --</option>
+                        {% for t in templates %}<option value="{{ t.id }}">{{ t.name }}</option>{% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group dynamic-field" id="field-group-data_szkolenia" style="display: none;">
+                    <label for="training_date">Data szkolenia:</label>
+                    <input type="date" id="training_date" name="training_date" class="form-control">
+                </div>
+
+                <div class="form-group dynamic-field" id="field-group-numer_certyfikatu" style="display: none;">
+                    <label for="start_number">Numer początkowy:</label>
+                    <input type="number" id="start_number" name="start_number" value="1" min="1" class="form-control">
+                </div>
+
+                <div class="form-group dynamic-field" id="field-group-instruktor" style="display: none;">
+                    <label for="instructor_name">Imię i nazwisko instruktora:</label>
+                    <input type="text" id="instructor_name" name="instructor_name" class="form-control">
+                </div>
+
+                <div class="form-group dynamic-field" id="field-group-waznosc" style="display: none;">
+                    <label>Ważność certyfikatu:</label>
+                    <select id="validity_type" name="validity_type" class="form-control">
+                        <option value="years" selected>W latach</option>
+                        <option value="date">Konkretna data</option>
+                        <option value="none">Bezterminowo</option>
+                    </select>
+                </div>
+                <div id="validity-value-container" class="dynamic-field" style="display: none;">
+                    <div class="form-group" id="validity-years-group">
+                        <input type="number" name="validity_value_years" value="2" min="1" class="form-control">
+                    </div>
+                    <div class="form-group" id="validity-date-group" style="display: none;">
+                        <input type="date" name="validity_value_date" class="form-control">
+                    </div>
+                </div>
+
+                <div id="generator-custom-fields"></div>
+
+                <button type="submit" id="generate-btn" class="btn btn-success">Generuj certyfikaty</button>
+            </form>
+            <div id="status" class="mt-3"></div>
+        {% else %}
+            <p class="alert alert-info">Nie masz przypisanych żadnych szablonów. Skontaktuj się z administratorem.</p>
+        {% endif %}
+    </div>
+{% endblock %}

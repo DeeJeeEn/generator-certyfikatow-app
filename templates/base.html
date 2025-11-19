@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %} - Generator Certyfikatów</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body { background-color: #f8f9fa; }
+        /* Padding paska - usunięcie go lub zmniejszenie pomaga w wyrównaniu */
+        .navbar { margin-bottom: 2rem; padding-top: 0.5rem; padding-bottom: 0.5rem; }
+
+        .container { max-width: 900px; }
+        .section-container { background: white; padding: 2rem; border-radius: 8px; margin-bottom: 2rem; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .info-message { font-size: 0.9rem; color: #6c757d; }
+        .template-list { list-style: none; padding: 0; }
+        .template-list li { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px solid #eee; }
+        .template-list .btn-group .btn { margin-left: 5px; }
+        .delete-btn { font-size: 0.8rem; padding: 0.25rem 0.5rem; }
+        .custom-field-group .custom-field-inputs { display: flex; gap: 10px; }
+        .custom-field-group { display: flex; align-items: center; gap: 10px; }
+
+        /* Resetujemy marginesy tekstu w navbarze */
+        .navbar-text { margin-top: 0; margin-bottom: 0; padding-top: 0; padding-bottom: 0; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <!-- Lewa strona: Logo. Usunąłem style="height: 40px", teraz flex sam to ustawi -->
+        <a class="navbar-brand d-flex align-items-center" href="{{ url_for('dashboard') }}">
+            <i class="fas fa-file-certificate mr-2"></i>Generator
+        </a>
+
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <!-- Środek: Linki Admina -->
+            <!-- Dodano align-items-center do UL -->
+            <ul class="navbar-nav mr-auto align-items-center">
+            {% if current_user.is_authenticated and current_user.is_admin %}
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}">Zarządzaj szablonami</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('manage_users') }}">Zarządzaj użytkownikami</a></li>
+            {% endif %}
+            </ul>
+
+            <!-- Prawa strona: Użytkownik -->
+            <!-- Dodano align-items-center do UL -->
+            <ul class="navbar-nav ml-auto align-items-center">
+                {% if current_user.is_authenticated %}
+                    <li class="nav-item mr-3">
+                        <span class="navbar-text text-light d-flex align-items-center">
+                            <small class="text-muted mr-1">Zalogowany jako:</small> <strong>{{ current_user.username }}</strong>
+                        </span>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('user_profile') }}">Mój Profil</a>
+                    </li>
+                    <li class="nav-item ml-2">
+                        <!-- Usunięto zbędne marginesy z przycisku -->
+                        <a class="btn btn-outline-light btn-sm px-3" href="{{ url_for('logout') }}">Wyloguj</a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Zaloguj</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+
+    <main class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+    </main>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

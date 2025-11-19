@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}Mój Profil{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="section-container">
+            <h2 class="mb-4"><i class="fas fa-user-circle"></i> Mój Profil</h2>
+
+            <form method="post">
+                <!-- Sekcja 1: Dane kontaktowe (Do edycji przez użytkownika) -->
+                <h4 class="text-muted mb-3">Twoje dane kontaktowe</h4>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Nazwa Firmy</label>
+                        <input type="text" class="form-control" value="{{ user.company_name or '' }}" readonly title="Zianę nazwy firmy zgłoś administratorowi">
+                        <small class="text-muted">Aby zmienić nazwę firmy, skontaktuj się z administratorem.</small>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>NIP</label>
+                        <input type="text" class="form-control" value="{{ user.nip or '' }}" readonly>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label>Osoba kontaktowa</label>
+                        <input type="text" name="contact_person" class="form-control" value="{{ user.contact_person or '' }}">
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label>Telefon</label>
+                        <input type="text" name="phone" class="form-control" value="{{ user.phone or '' }}">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Adres E-mail</label>
+                    <input type="email" name="email" class="form-control" value="{{ user.email or '' }}">
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Sekcja 2: Zmiana hasła -->
+                <h4 class="text-muted mb-3">Bezpieczeństwo</h4>
+                <div class="alert alert-warning">
+                    <i class="fas fa-lock"></i> Wypełnij poniższe pole tylko jeśli chcesz zmienić swoje hasło.
+                </div>
+
+                <div class="form-group">
+                    <label>Nowe hasło</label>
+                    <input type="password" name="new_password" class="form-control" placeholder="Wpisz nowe hasło (min. 5 znaków)">
+                </div>
+
+                <div class="form-group">
+                    <label>Powtórz nowe hasło</label>
+                    <input type="password" name="confirm_password" class="form-control" placeholder="Powtórz nowe hasło">
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save"></i> Zapisz zmiany</button>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary btn-lg ml-2">Anuluj</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

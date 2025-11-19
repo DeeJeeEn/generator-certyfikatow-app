@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}Zarządzaj Użytkownikami{% endblock %}
+
+{% block content %}
+<div class="section-container">
+    <h2>Dodaj nowego użytkownika</h2>
+    <form action="{{ url_for('add_user') }}" method="post" class="form-inline">
+        <div class="form-group mx-sm-3 mb-2">
+            <label for="username" class="sr-only">Nazwa użytkownika</label>
+            <input type="text" class="form-control" id="username" name="username" placeholder="Nazwa użytkownika" required>
+        </div>
+        <div class="form-group mx-sm-3 mb-2">
+            <label for="password" class="sr-only">Hasło</label>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Hasło" required>
+        </div>
+        <button type="submit" class="btn btn-primary mb-2">Dodaj użytkownika</button>
+    </form>
+</div>
+
+<hr>
+
+<div class="section-container">
+    <h2>Lista użytkowników</h2>
+    {% if users %}
+    <div class="list-group">
+        {% for user in users %}
+            {% if not user.is_admin %}
+            <a href="{{ url_for('user_details', user_id=user.id) }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                {{ user.username }}
+                <span class="badge badge-secondary">klient</span>
+            </a>
+            {% else %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+                {{ user.username }}
+                <span class="badge badge-success">administrator</span>
+            </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% else %}
+    <p>Brak użytkowników w systemie.</p>
+    {% endif %}
+</div>
+{% endblock %}

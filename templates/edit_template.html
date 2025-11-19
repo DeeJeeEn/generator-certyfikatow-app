@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+{% block title %}Edytuj Szablon{% endblock %}
+{% block content %}
+<div class="section-container">
+    <h2>Edytuj szablon: {{ template.name }}</h2>
+    <form action="{{ url_for('edit_template', template_id=template.id) }}" method="post" enctype="multipart/form-data" class="form-section">
+
+        <!-- SEKCJA 1: PODSTAWOWE DANE -->
+        <fieldset>
+            <legend>1. Dane podstawowe</legend>
+            <div class="form-group">
+                <label for="template_name_upload">Nazwa szablonu (wymagane):</label>
+                <input type="text" id="template_name_upload" name="template_name" class="form-control" value="{{ template.name }}" required>
+            </div>
+
+            <div class="alert alert-secondary d-flex justify-content-between align-items-center">
+                <span>Plik szablonu .xlsx: <strong>{{ template.filename }}</strong></span>
+                <!-- NOWY PRZYCISK POBIERANIA -->
+                <a href="{{ url_for('download_template_source', template_id=template.id) }}" class="btn btn-sm btn-outline-primary">
+                    Pobierz plik
+                </a>
+            </div>
+            <p class="info-message text-muted"><small>Aby zmienić plik szablonu, usuń ten szablon i dodaj go na nowo.</small></p>
+        </fieldset>
+        <hr>
+
+        <!-- SEKCJA 2: MAPOWANIE KOMÓREK -->
+        <fieldset>
+            <legend>2. Mapowanie komórek</legend>
+            <p class="info-message">Wypełnij adresy komórek (np. C6) i zaznacz, które pola mają być wymagane dla użytkownika końcowego.</p>
+
+            {% for field in fields_to_map %}
+            <div class="form-group form-row align-items-center">
+                <label class="col-sm-3 col-form-label">{{ field.replace('_', ' ').title() }}:</label>
+                <div class="col-sm-5">
+                    <input type="text" name="mapping_{{ field }}" class="form-control"
+                           placeholder="np. A1"
+                           value="{{ mappings_dict.get(field, {}).get('cell', '') }}"
+                           {% if field == 'imie_nazwisko' %}required{% endif %}>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="is_required_{{ field }}" id="is_required_{{ field }}"
+                               {% if mappings_dict.get(field, {}).get('required') %}checked{% endif %}>
+                        <label class="form-check-label" for="is_required_{{ field }}">Wymagane</label>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+
+            <div id="custom-fields-container">
+                {% for field_name, data in custom_mappings.items() %}
+                {% set clean_name = field_name.replace('custom_', '').replace('_', ' ') %}
+                {% set index = loop.index0 %}
+                <div class="form-group custom-field-group form-row align-items-center">
+                    <div class="col-sm-8">
+                        <div class="custom-field-inputs">
+                            <input type="text" name="custom_name_{{ index }}" class="form-control" placeholder="Nazwa własnego pola" value="{{ clean_name }}" required>
+                            <input type="text" name="custom_cell_{{ index }}" class="form-control" placeholder="Adres komórki" value="{{ data.cell }}" required>
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="custom_is_required_{{ index }}" id="custom_is_required_{{ index }}"
+                                   {% if data.required %}checked{% endif %}>
+                            <label class="form-check-label" for="custom_is_required_{{ index }}">Wymagane</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-1">
+                        <button type="button" class="btn btn-warning btn-sm remove-field-btn">Usuń</button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="button" id="add-custom-field-btn" class="btn btn-secondary mt-2 mb-3">Dodaj własne pole</button>
+
+            <div class="form-group mt-4">
+                <label for="numbering_format">Format numeracji certyfikatów (opcjonalne):</label>
+                <input type="text" name="numbering_format" id="numbering_format" class="form-control"
+                       value="{{ template.numbering_format or '' }}" placeholder="np. CERT/{ROK}/{NUMER}">
+                <small class="form-text text-muted">
+                    Dostępne znaczniki: {NUMER}, {NUMER_STARTOWY}, {ROK}, {RR}, {MIESIAC}, {DZIEN}, {ID_UZYTKOWNIKA}, {LOGIN_UZYTKOWNIKA}
+                </small>
+            </div>
+        </fieldset>
+        <hr>
+
+        <!-- SEKCJA 3: PRZYPISYWANIE UŻYTKOWNIKÓW -->
+        <fieldset>
+            <legend>3. Przypisz użytkownikom</legend>
+            <div class="form-group">
+                <label for="assigned_users">Wybierz użytkowników, którzy mają widzieć ten szablon:</label>
+                <select multiple class="form-control" id="assigned_users" name="assigned_users" size="8">
+                    {% for user in all_users %}
+                    <option value="{{ user.id }}" {% if user.id in assigned_user_ids %}selected{% endif %}>
+                        {{ user.username }}
+                    </option>
+                    {% endfor %}
+                </select>
+                <small class="form-text text-muted">Przytrzymaj CTRL (lub CMD na Macu), aby zaznaczyć wielu użytkowników.</small>
+            </div>
+        </fieldset>
+        <hr>
+
+        <button type="submit" class="btn btn-primary">Zapisz zmiany</button>
+        <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Anuluj</a>
+    </form>
+</div>
+{% endblock %}
