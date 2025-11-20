@@ -1,0 +1,20 @@
+{
+  "name": "Generator Certyfikatów",
+  "description": "Generator certyfikatów z użyciem Flask i LibreOffice na Heroku.",
+  "keywords": ["flask", "python", "libreoffice", "pdf"],
+  "stack": "heroku-24",
+  "buildpacks": [
+    {
+      "url": "https://github.com/exi/heroku-buildpack-libreoffice.git"
+    },
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "eco"
+    }
+  }
+}
