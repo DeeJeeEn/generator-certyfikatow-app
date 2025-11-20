@@ -1,0 +1,22 @@
+Baza danych i logi
+
+instance/
+pycache/
+*.pyc
+
+Pliki systemowe
+
+.venv/
+.idea/
+
+Duże pliki tymczasowe i pakiety instalacyjne
+
+temp_files/
+deployment.zip
+user_uploads/
+
+KLUCZOWE: Pliki LibreOffice i inne duże katalogi
+
+libreoffice/
+*.db
+*.sqlite
