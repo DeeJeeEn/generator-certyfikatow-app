@@ -5,7 +5,7 @@
   "stack": "heroku-24",
   "buildpacks": [
     {
-      "url": "https://github.com/exi/heroku-buildpack-libreoffice.git"
+      "url": "https://github.com/dpv/heroku-buildpack-libreoffice.git"
     },
     {
       "url": "heroku/python"
