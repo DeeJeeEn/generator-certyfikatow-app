@@ -140,7 +140,7 @@ def convert_to_pdf(source_xlsx_path, output_folder):
     Wersja ostateczna, zoptymalizowana dla serwera Linux.
     """
     # Na serwerach Linux/Heroku wystarczy komenda 'libreoffice'
-    LIBREOFFICE_PATH = "libreoffice"
+    LIBREOFFICE_PATH = "/app/vendor/libreoffice/instdir/program/soffice"
 
     command = [
         LIBREOFFICE_PATH,
